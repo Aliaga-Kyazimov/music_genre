@@ -1,39 +1,52 @@
---изменения 
-select name_nickname from artist
-where id in (
-select a.artist_id
-from albumartist a 
-join album a2 on a.album_id = a2.id 
-where a2.year_of_release < '2020-01-01' or a2.year_of_release > '2020-12-31');
+--4 запроос
+select name_nickname from artist a 
+join albumartist a2 
+on a.id = a2.artist_id 
+join album a3 
+on a3.id = a2.album_id 
+where a3.year_of_release < '2020-01-01' or a3.year_of_release > '2020-12-31'
+group by a.name_nickname 
 
---select name from collection
---where id in (select collection_id from collectionsong
---where song_id in (select id from song
---where album_id in (select album_id from albumartist
---where artist_id in (select id from artist
---where name_nickname like '%Скриптонит%'))));
---
+--5 запрос
+select c."name"  from collection c 
+join collectionsong c2 
+on c.id = c2.collection_id 
+join song s 
+on s.id = c2.song_id
+join albumartist a 
+on a.album_id = s.album_id
+join artist a2 
+on a2.id = a.artist_id
+where name_nickname like '%Скриптонит%'
+group by c."name" ;
 
-select name_nickname from artist a2 
-where id in (select a.artist_id  from albumartist a 
-join genreartist g on a.artist_id = g.artist_id 
-group by a.artist_id
-having count(g.artist_id) > 1);
+--6 запрос
+select title from album a 
+join albumartist a2 
+on a2.album_id = a.id 
+join genreartist g 
+on g.artist_id = a2.artist_id
+group by a.id
+having count(a.id) > 1; 
 
+--7 запрос
 select name from song
 where id not in (select song_id from collectionsong);
 
-select name_nickname from artist
-where id in (select artist_id
-from albumartist a 
-join song s on a.album_id = s.album_id 
-where s.song_time in (select min(song_time) from song));
+--8 запрос
+select name_nickname from artist a 
+join albumartist a2 
+on a.id = a2.artist_id 
+join song s 
+on s.album_id = a2.album_id 
+where s.song_time in (select min(song_time) from song);
 
-select title from album a2 
-where id in (select album_id from song s2 
-group by album_id 
-having count(album_id) in (select count(a.id) from album a 
-join song s on a.id = s.album_id 
-group by a.id
-order by count(a.id)
-limit 1));
+--9 запрос	
+select title from album a 
+join song s 
+on a.id = s.album_id
+group by a.title
+having count(a.title) in (select count(album_id) from song s 
+group by s.album_id 
+order by count(s.album_id)
+limit 1);
