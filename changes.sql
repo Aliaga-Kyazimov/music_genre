@@ -1,14 +1,12 @@
---4 запроос
+--4 запрос(новый)
 select name_nickname from artist a 
 join albumartist a2 
 on a.id = a2.artist_id 
-join album a3 
-on a3.id = a2.album_id 
-where a3.year_of_release < '2020-01-01' or a3.year_of_release > '2020-12-31'
-group by a.name_nickname 
+where a2.album_id not in (select id from album a 
+where year_of_release > '2020-01-01' and year_of_release < '2020-12-31')
 
---5 запрос
-select c."name"  from collection c 
+--5 запрос (новый)
+select distinct c."name"  from collection c 
 join collectionsong c2 
 on c.id = c2.collection_id 
 join song s 
@@ -17,8 +15,7 @@ join albumartist a
 on a.album_id = s.album_id
 join artist a2 
 on a2.id = a.artist_id
-where name_nickname like '%Скриптонит%'
-group by c."name" ;
+where name_nickname like '%Скриптонит%';
 
 --6 запрос
 select title from album a 
